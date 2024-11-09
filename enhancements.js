@@ -1,3 +1,4 @@
+
 /**
  * Filters transactions by specified states and primary work location status.
  * @param {Array<Object>} transactions - Array of transaction objects.

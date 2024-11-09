@@ -42,7 +42,7 @@ async function main(res) {
 }
 
 // Function to handle CORS
-function setCorsHeaders(res) {
+function setCorsHeader(res) {
   res.setHeader('Access-Control-Allow-Origin', '*'); // Change '*' to a specific domain for production
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -52,7 +52,7 @@ function setCorsHeaders(res) {
 const server = http.createServer((req, res) => {
 
   // Enable CORS for all origins
-  setCorsHeaders(res);
+  setCorsHeader(res);
 
   // Handle pre-flight request
   if (req.method === 'OPTIONS') return res.writeHead(200).end();

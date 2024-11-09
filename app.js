@@ -19,8 +19,8 @@ async function main() {
         const postResponse = await submitTask.submitResult(getReponse);
         console.log(postResponse);
 
-    } catch (e) {
-        logger.error(e);
+    } catch (error) {
+        logger.error(error);
     }
 }
 

@@ -3,7 +3,7 @@
 ## Project Setup
 
 1. Clone this repository using the command:
-   ```bash
+   ```
    git clone https://github.com/tabish16/ADP_Assignment.git
    ```
 

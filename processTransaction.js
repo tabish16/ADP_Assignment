@@ -91,6 +91,7 @@ const getAlphaTransactions = (transactions, topEarnerId) => {
         .map(transaction => transaction.transactionID);
 };
 
+
 module.exports = {
     processTransactions
 }
