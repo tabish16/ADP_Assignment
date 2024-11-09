@@ -2,10 +2,11 @@ const axios = require("axios");
 const logger = require('./logger');
 const fetchTask = require('./fetchTask');
 
-
 /**
- * Function to execute core business logic based on input data
- * @returns {object} - id and array of top earner's transactionId 
+ * Processes transactions to identify top earner's transactions within the past year.
+ * @async
+ * @function processTransactions
+ * @returns {Promise<{id: string, result: string[]}>} Object containing the ID and an array of the top earner's "alpha" transaction IDs.
  */
 const processTransactions = async function processTransactions() {
     let data = await fetchTask();
@@ -19,10 +20,11 @@ const processTransactions = async function processTransactions() {
 }
 
 /**
- * Function to filter by past year
- * @param {object} data 
- * @param {number} yearsAgo 
- * @returns {object} filtered data
+ * Filters a transaction by checking if it occurred in the specified past year.
+ * @function filterByPastYears
+ * @param {Object} data - A transaction object containing a timestamp.
+ * @param {number} yearsAgo - Number of years ago to check from the current year (default is 1).
+ * @returns {Object} The transaction object if it matches the filter.
  */
 const filterByPastYears = (data, yearsAgo = 1) => {
     const timestampYear = new Date(data.timeStamp).getUTCFullYear();
@@ -34,9 +36,10 @@ const filterByPastYears = (data, yearsAgo = 1) => {
 };
 
 /**
- * Function to calculate total amounts for each employee
- * @param {object} transactions 
- * @returns {object} employee id and total amount
+ * Calculates the total transaction amount for each employee.
+ * @function calculateEmployeeTotals
+ * @param {Object[]} transactions - Array of transaction objects.
+ * @returns {Object} An object with employee IDs as keys and their total transaction amounts as values.
  */
 const calculateEmployeeTotals = (transactions) => {
     let employeeTotals = {};
@@ -53,9 +56,10 @@ const calculateEmployeeTotals = (transactions) => {
 };
 
 /**
- * Function to get top earner
- * @param {object} employeeTotals 
- * @returns {string} id of the top earner for the given year
+ * Finds the employee with the highest total transaction amount.
+ * @function findTopEarner
+ * @param {Object} employeeTotals - An object with employee IDs as keys and their total transaction amounts as values.
+ * @returns {string} The ID of the top-earning employee.
  */
 const findTopEarner = employeeTotals => {
     let [topEarner, maxTotal] = [null, 0];
@@ -69,10 +73,11 @@ const findTopEarner = employeeTotals => {
 };
 
 /**
- * Function to get alpha transaction Ids
- * @param {object} transactions 
- * @param {string} topEarnerId 
- * @returns {array} of transaction Ids
+ * Retrieves the transaction IDs of all "alpha" transactions made by the top earner.
+ * @function getAlphaTransactions
+ * @param {Object[]} transactions - Array of transaction objects.
+ * @param {string} topEarnerId - ID of the top-earning employee.
+ * @returns {string[]} Array of "alpha" transaction IDs made by the top earner.
  */
 const getAlphaTransactions = (transactions, topEarnerId) => {
     if (!(topEarnerId && Array.isArray(transactions))) return [];

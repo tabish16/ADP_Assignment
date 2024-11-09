@@ -1,38 +1,72 @@
 const processTransaction = require("./processTransaction");
 const submitTask = require("./submitTask");
-const logger = require('./logger');
 const http = require('http');
 
+/**
+ * Handles the main process of fetching and processing transaction data, 
+ * then submitting the results. It sends a response back to the client with 
+ * the outcome of the task, either a success or an error message.
+ * 
+ * This function:
+ * - Calls `processTransaction.processTransactions()` to fetch the necessary data.
+ * - Submits the fetched data using `submitTask.submitResult()`.
+ * - Logs the response of the submission.
+ * - Returns a JSON response with a success message and the submission result, 
+ *   or an error message in case of failure.
+ * 
+ * @param {http.ServerResponse} res - The HTTP response object used to send 
+ * the response back to the client.
+ * 
+ * @returns {void} - Does not return a value, but sends a response via `res`.
+ * 
+ * @throws {Error} - If any error occurs during the process, the function catches 
+ * the error and sends a 500 status code with the error message.
+ */
 async function main(res) {
-    try {
-        // Get data Id and top earner transaction Ids array
-        const getReponse = await processTransaction.processTransactions();
+  try {
+    
+    const getResponse = await processTransaction.processTransactions();
 
-        // Post the response
-        const postResponse = await submitTask.submitResult(getReponse);
-        console.log(postResponse);
+    const postResponse = await submitTask.submitResult(getResponse);
+    console.log(postResponse);
 
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ message: 'Task processed successfully', postResponse }));
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify({ message: 'Task processed successfully', postResponse }));
 
-    } catch (error) {
-        res.writeHead(500, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: error.message }));
-    }
+  } catch (error) {
+    res.statusCode = 500;
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify({ error: error.message }));
+  }
+}
+
+// Function to handle CORS
+function setCorsHeaders(res) {
+  res.setHeader('Access-Control-Allow-Origin', '*'); // Change '*' to a specific domain for production
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 }
 
 // Create an HTTP server
 const server = http.createServer((req, res) => {
-    if (req.method === 'GET' && req.url === '/') {
-      main(res);
-    } else {
-      res.writeHead(404, { 'Content-Type': 'text/plain' });
-      res.end('Not found');
-    }
-  });
-  
-  // Listen on localhost:3000
-  const PORT = 3000;
-  server.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
-  });
+
+  // Enable CORS for all origins
+  setCorsHeaders(res);
+
+  // Handle pre-flight request
+  if (req.method === 'OPTIONS') return res.writeHead(200).end();
+
+  // Handle main route
+  if (req.method === 'GET' && req.url === '/') {
+    return main(res);
+  }
+
+  // 404 for other routes
+  res.statusCode = 404;
+  res.setHeader('Content-Type', 'application/json');
+  res.end(JSON.stringify({ error: 'Not found' }));
+});
+
+// Start server
+server.listen(3000, () => console.log('Server running at http://localhost:3000'));
